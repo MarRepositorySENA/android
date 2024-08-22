@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/numero"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Digite un numero"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.06" />
+
+    <Button
+        android:id="@+id/Metro1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="88dp"
+        android:text="M->Mm"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Numero" />
+
+    <Button
+        android:id="@+id/Metro2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="92dp"
+        android:text="M->Km"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.593"
+        app:layout_constraintStart_toEndOf="@+id/Metro1"
+        app:layout_constraintTop_toBottomOf="@+id/Numero" />
+
+    <TextView
+        android:id="@+id/Metro_Mm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:text="Metro"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="340dp" />
+
+    <TextView
+        android:id="@+id/Decimetro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Decimetro"
+        tools:layout_editor_absoluteX="36dp"
+        tools:layout_editor_absoluteY="376dp" />
+
+    <TextView
+        android:id="@+id/Centimetro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Centimetro"
+        tools:layout_editor_absoluteX="32dp"
+        tools:layout_editor_absoluteY="413dp" />
+
+    <TextView
+        android:id="@+id/Milimetro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Milimetro"
+        tools:layout_editor_absoluteX="28dp"
+        tools:layout_editor_absoluteY="447dp" />
+
+    <TextView
+        android:id="@+id/Metro_Km"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Metro"
+        tools:layout_editor_absoluteX="269dp"
+        tools:layout_editor_absoluteY="340dp" />
+
+    <TextView
+        android:id="@+id/Decametro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Decametro"
+        tools:layout_editor_absoluteX="271dp"
+        tools:layout_editor_absoluteY="379dp" />
+
+    <TextView
+        android:id="@+id/Hectometro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hectometro"
+        tools:layout_editor_absoluteX="271dp"
+        tools:layout_editor_absoluteY="423dp" />
+
+    <TextView
+        android:id="@+id/Kilometro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Kilometro"
+        tools:layout_editor_absoluteX="269dp"
+        tools:layout_editor_absoluteY="456dp" />
+
+    <EditText
+        android:id="@+id/Numero"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:ems="10"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.514"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/numero" />
+</androidx.constraintlayout.widget.ConstraintLayout>
