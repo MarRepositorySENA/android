@@ -68,7 +68,11 @@ class _MenuScreenState extends State<MenuScreen> {
                     title: Text(view['vistaNombre']),
                     onTap: () {
                       // Navega a la vista correspondiente
-                      Navigator.pushNamed(context, view['vistaRuta']);
+                      if (view['vistaNombre'] == 'Persona') {
+                        Navigator.pushNamed(context, '/registro_persona');
+                      } else {
+                        Navigator.pushNamed(context, view['vistaRuta']);
+                      }
                     },
                   );
                 },
