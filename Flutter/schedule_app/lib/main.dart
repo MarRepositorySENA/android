@@ -5,6 +5,8 @@ import 'screens/menu_screen.dart';
 import 'screens/persona_screen.dart';
 import 'screens/role_screen.dart';
 import 'screens/modulo_screen.dart';
+import 'screens/vistas_roles_screen.dart';
+
 
 
 void main() {
@@ -37,6 +39,8 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (context) => RoleScreen());
           case '/registro_modulo':
             return MaterialPageRoute(builder: (context) => ModuloScreen());
+          case '/registro_vistas_roles':
+            return MaterialPageRoute(builder: (context) => VistasRolesScreen());
           default:
             return null;
         }
