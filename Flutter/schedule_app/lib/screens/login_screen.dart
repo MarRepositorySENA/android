@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:schedule_app/services/auth_service.dart'; // Asegúrate de usar la ruta correcta
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -17,27 +18,44 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
     });
 
-    bool isLoggedIn = await _authService.login(
-      _usernameController.text,
-      _passwordController.text,
-    );
-
-    if (isLoggedIn) {
-      // Obtener permisos del usuario
-      List<dynamic> permissions = await _authService.fetchPermissions(_usernameController.text);
-      
-      // Navegar a la pantalla de inicio con los permisos
-      Navigator.pushReplacementNamed(context, '/home', arguments: permissions);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Credenciales incorrectas')),
+    try {
+      bool isLoggedIn = await _authService.login(
+        _usernameController.text,
+        _passwordController.text,
       );
-    }
 
-    setState(() {
-      _isLoading = false;
-    });
+      if (isLoggedIn) {
+        // Obtener permisos del usuario
+        List<dynamic> permissions = await _authService.fetchPermissions(_usernameController.text);
+        
+        // Navegar a la pantalla de inicio con los permisos
+        Navigator.pushReplacementNamed(context, '/home', arguments: permissions);
+
+        // Mostrar toast de éxito
+        _showToast('Ingreso exitoso');
+      } else {
+        // Mostrar toast de error
+        _showToast('Usuario o contraseña incorrectos');
+      }
+    } catch (e) {
+      _showToast('Error al conectar con el servidor');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
+
+  void _showToast(String message) {
+  Fluttertoast.showToast(
+    msg: message,
+    backgroundColor: Colors.white, // Fondo blanco
+    textColor: Colors.black, // Texto negro
+    toastLength: Toast.LENGTH_SHORT,
+    gravity: ToastGravity.BOTTOM,
+    webBgColor: "white", // Para la web, si es necesario
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(height: 20),
               Text(
                 'Login',
-                style: TextStyle(fontSize: 20, color: Colors.teal),
+                style: TextStyle(fontSize: 20, color: Color(0xFF004455)),
               ),
               SizedBox(height: 30),
               TextField(
@@ -83,7 +101,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () {
                   // Acción de recuperar contraseña
                 },
-                child: Text('Recuperar contraseña'),
+                child: Text('Recuperar contraseña',
+                style: TextStyle(color: Color(0xFF004455)),
+                ),
+                
               ),
               SizedBox(height: 20),
               _isLoading
@@ -92,14 +113,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all(Color(0xFF004455)), // Color principal
                         foregroundColor: MaterialStateProperty.all(Colors.white), // Color del texto
-                        overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                          (Set<MaterialState> states) {
-                            if (states.contains(MaterialState.hovered)) {
-                              return Color(0xFF39A900); // Color hover
-                            }
-                            return null; // Dejar el color por defecto
-                          },
-                        ),
                         padding: MaterialStateProperty.all(
                             EdgeInsets.symmetric(vertical: 15.0, horizontal: 50.0)),
                         shape: MaterialStateProperty.all<RoundedRectangleBorder>(

@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
-import 'screens/home_screen.dart'; // Importa otras pantallas como Home si ya las tienes
+import 'screens/home_screen.dart';
 import 'screens/menu_screen.dart';
 import 'screens/persona_screen.dart';
 import 'screens/role_screen.dart';
 import 'screens/modulo_screen.dart';
 import 'screens/vistas_roles_screen.dart';
-
-
 
 void main() {
   runApp(MyApp());
@@ -25,7 +23,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/login',
       onGenerateRoute: (settings) {
         switch (settings.name) {
-          case '/login':
+          case '/':
             return MaterialPageRoute(builder: (context) => LoginScreen());
           case '/home':
             final List<dynamic> permissions = settings.arguments as List<dynamic>;

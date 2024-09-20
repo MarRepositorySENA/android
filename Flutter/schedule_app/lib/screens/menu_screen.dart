@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MenuScreen extends StatefulWidget {
-  final List<dynamic> permissions;
+  final List<dynamic>? permissions; // Permitir que sea null
 
   MenuScreen({required this.permissions});
 
@@ -10,22 +10,23 @@ class MenuScreen extends StatefulWidget {
 }
 
 class _MenuScreenState extends State<MenuScreen> {
-  Map<String, List<dynamic>> moduleViews = {}; // Módulos y sus vistas asociadas
-  String? selectedModule; // Módulo seleccionado actualmente
+  Map<String, List<dynamic>> moduleViews = {};
 
   @override
   void initState() {
     super.initState();
-    _organizePermissions(); // Organiza los permisos en módulos y vistas
+    _organizePermissions();
   }
 
   void _organizePermissions() {
-    for (var permission in widget.permissions) {
-      String moduleName = permission['moduloNombre'];
-      if (!moduleViews.containsKey(moduleName)) {
-        moduleViews[moduleName] = [];
+    if (widget.permissions != null) {
+      for (var permission in widget.permissions!) {
+        String moduleName = permission['moduloNombre'];
+        if (!moduleViews.containsKey(moduleName)) {
+          moduleViews[moduleName] = [];
+        }
+        moduleViews[moduleName]?.add(permission);
       }
-      moduleViews[moduleName]?.add(permission);
     }
   }
 
@@ -35,50 +36,32 @@ class _MenuScreenState extends State<MenuScreen> {
       appBar: AppBar(
         title: Text('Menú de Navegación'),
       ),
-      body: Column(
-        children: [
-          // Lista de módulos
-          Expanded(
-            child: ListView(
-              children: moduleViews.keys.map((moduleName) {
-                return ListTile(
-                  leading: Icon(Icons.folder_open),
-                  title: Text(moduleName),
-                  trailing: selectedModule == moduleName
-                      ? Icon(Icons.keyboard_arrow_up)
-                      : Icon(Icons.keyboard_arrow_down),
-                  onTap: () {
-                    setState(() {
-                      selectedModule = selectedModule == moduleName ? null : moduleName;
-                    });
-                  },
+      body: ListView(
+        children: moduleViews.keys.map((moduleName) {
+          return Card(
+            color: Color(0xFF004455),
+            margin: EdgeInsets.all(8),
+            child: ExpansionTile(
+              title: Text(moduleName, style: TextStyle(color: Colors.white)),
+              children: moduleViews[moduleName]!.map<Widget>((view) {
+                return Container(
+                  margin: EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
+                  padding: EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFB2E4A3),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: ListTile(
+                    title: Text(view['vistaNombre'], style: TextStyle(color: Colors.black)),
+                    onTap: () {
+                      Navigator.pushNamed(context, view['vistaRuta']);
+                    },
+                  ),
                 );
               }).toList(),
             ),
-          ),
-          // Si hay un módulo seleccionado, muestra sus vistas
-          if (selectedModule != null)
-            Expanded(
-              child: ListView.builder(
-                itemCount: moduleViews[selectedModule]!.length,
-                itemBuilder: (context, index) {
-                  final view = moduleViews[selectedModule]![index];
-                  return ListTile(
-                    leading: Icon(Icons.view_module),
-                    title: Text(view['vistaNombre']),
-                    onTap: () {
-                      // Navega a la vista correspondiente
-                      if (view['vistaNombre'] == 'Persona') {
-                        Navigator.pushNamed(context, '/registro_persona');
-                      } else {
-                        Navigator.pushNamed(context, view['vistaRuta']);
-                      }
-                    },
-                  );
-                },
-              ),
-            ),
-        ],
+          );
+        }).toList(),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
@@ -95,12 +78,13 @@ class _MenuScreenState extends State<MenuScreen> {
             label: 'Ajustes',
           ),
         ],
-        currentIndex: 1, // Estás en la pantalla del menú
+        currentIndex: 1,
         onTap: (int index) {
           if (index == 0) {
-            Navigator.pushNamed(context, '/home'); // Redirige a Home
+            Navigator.pushNamed(context, '/home', arguments: widget.permissions);
+          } else if (index == 2) {
+            Navigator.pushNamed(context, '/ajustes'); // Asegúrate de tener la ruta correspondiente
           }
-          // Puedes agregar acciones adicionales para otros ítems del menú
         },
       ),
     );

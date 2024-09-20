@@ -9,16 +9,13 @@ class VistasRolesScreen extends StatefulWidget {
 
 class _VistasRolesScreenState extends State<VistasRolesScreen> {
   List<dynamic> _vistasRoles = [];
-  List<dynamic> _vistas = [];
-  List<dynamic> _roles = [];
   bool _isLoading = true;
+  Map<int, List<dynamic>> roleModules = {};
 
   @override
   void initState() {
     super.initState();
     _fetchVistasRoles();
-    _fetchVistas();
-    _fetchRoles();
   }
 
   Future<void> _fetchVistasRoles() async {
@@ -27,130 +24,105 @@ class _VistasRolesScreenState extends State<VistasRolesScreen> {
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
+        List<dynamic> vistasRolesData = json.decode(utf8.decode(response.bodyBytes));
+        _organizeData(vistasRolesData);
         setState(() {
-          _vistasRoles = json.decode(utf8.decode(response.bodyBytes));
+          _vistasRoles = vistasRolesData;
+          _isLoading = false;
         });
       } else {
-        throw Exception('Error al cargar datos de vistas-roles');
+        throw Exception('Error al cargar datos');
       }
     } catch (error) {
       print('Error: $error');
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
-  Future<void> _fetchVistas() async {
-    final url = Uri.parse('http://localhost:9000/base/api/v1/base/security/vista');
+  // Organizar la data por roles y módulos
+  void _organizeData(List<dynamic> data) {
+    for (var item in data) {
+      final roleId = item['roleId']['id'];
+      final moduloId = item['vistaId']['moduloId']['id'];
 
-    try {
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        setState(() {
-          _vistas = json.decode(utf8.decode(response.bodyBytes));
-        });
-      } else {
-        throw Exception('Error al cargar datos de vistas');
+      // Verificar si el Role ya está en el mapa, si no, inicializarlo
+      if (roleModules[roleId] == null) {
+        roleModules[roleId] = [];
       }
-    } catch (error) {
-      print('Error: $error');
-    }
-  }
 
-  Future<void> _fetchRoles() async {
-    final url = Uri.parse('http://localhost:9000/base/api/v1/base/security/role');
-
-    try {
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        setState(() {
-          _roles = json.decode(utf8.decode(response.bodyBytes));
-          _isLoading = false; // Marcamos como no cargando aquí
+      // Verificar si ya se agregó el módulo al role
+      bool moduloExists = roleModules[roleId]!.any((modulo) => modulo['moduloId']['id'] == moduloId);
+      if (!moduloExists) {
+        roleModules[roleId]!.add({
+          'moduloId': item['vistaId']['moduloId'],
+          'vistas': []
         });
-      } else {
-        throw Exception('Error al cargar datos de roles');
       }
-    } catch (error) {
-      print('Error: $error');
-    }
-  }
 
-  List<dynamic> _getVistasForRole(int roleId) {
-    // Obtener las vistas que pertenecen al rol específico
-    return _vistasRoles
-        .where((vr) => vr['roleId']['id'] == roleId)
-        .map((vr) => vr['vistaId'])
-        .toList();
+      // Añadir la vista al módulo correspondiente
+      roleModules[roleId]!
+          .firstWhere((modulo) => modulo['moduloId']['id'] == moduloId)['vistas']
+          .add(item['vistaId']);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Roles y sus Vistas'),
+        title: Text('Vistas por Roles'),
       ),
-      body: Container(
-        color: Color(0xFFFFFFFF), // Fondo blanco
-        child: _isLoading
-            ? Center(child: CircularProgressIndicator())
-            : ListView.builder(
-                itemCount: _roles.length,
-                itemBuilder: (context, index) {
-                  final role = _roles[index];
-                  final vistasForRole = _getVistasForRole(role['id']); // Obtener las vistas del rol actual
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : ListView(
+              children: roleModules.entries.map((entry) {
+                final role = _vistasRoles.firstWhere((item) => item['roleId']['id'] == entry.key)['roleId'];
 
-                  return Card(
-                    margin: EdgeInsets.all(8),
-                    color: Color(0xFF004455), // Color del role (sin cambiar)
-                    child: ExpansionTile(
-                      title: Text(
-                        '${role['nombre']}',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      subtitle: Text(
-                        '${role['descripcion']}',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      // Cuando se expande el tile, solo las vistas se mostrarán con color verde
-                      children: vistasForRole.isNotEmpty
-                          ? vistasForRole.map<Widget>((vista) {
-                              return Container(
-                                color: Color(0xFF39A900), // Color de las vistas al expandirse
+                return Card(
+                  color: Color(0xFF004455), // Color para el Role
+                  margin: EdgeInsets.all(8),
+                  child: ExpansionTile(
+                    title: Text(
+                      role['nombre'], // Nombre del Role
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    children: entry.value.map<Widget>((modulo) {
+                      final moduloData = modulo['moduloId'];
+                      return ListTile(
+                        title: ExpansionTile(
+                          title: Text(
+                            moduloData['nombre'], // Nombre del Módulo
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          tilePadding: EdgeInsets.only(left: 20),
+                          backgroundColor: Color(0xFF006666), // Color para el Módulo
+                          children: modulo['vistas'].map<Widget>((vista) {
+                            return Padding(
+                              padding: const EdgeInsets.only(left: 40, right: 10, top: 5, bottom: 5),
+                              child: Card(
+                                color: Color(0xFF39A900), // Color al expandir la Vista
                                 child: ListTile(
                                   title: Text(
-                                    vista['nombre'],
+                                    vista['nombre'], // Nombre de la Vista
                                     style: TextStyle(color: Colors.white),
                                   ),
                                   subtitle: Text(
-                                    'Ruta: ${vista['ruta']}',
+                                    'Ruta: ${vista['ruta']}', // Ruta de la Vista
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ),
-                              );
-                            }).toList()
-                          : [
-                              ListTile(
-                                title: Text(
-                                  'No hay vistas asignadas',
-                                  style: TextStyle(color: Colors.white),
-                                ),
                               ),
-                            ],
-                    ),
-                  );
-                },
-              ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: ElevatedButton(
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Color(0xFF004455)),
-            foregroundColor: MaterialStateProperty.all(Colors.white),
-          ),
-          onPressed: () {
-            Navigator.pop(context); // Regresa a la pantalla anterior
-          },
-          child: Text('Volver'),
-        ),
-      ),
+                            );
+                          }).toList(),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                );
+              }).toList(),
+            ),
     );
   }
 }

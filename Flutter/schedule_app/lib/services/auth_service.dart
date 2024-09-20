@@ -21,7 +21,7 @@ class AuthService {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body); // Decodifica el JSON
+      return jsonDecode(utf8.decode(response.bodyBytes)); // Decodifica el JSON con UTF-8
     } else {
       throw Exception('Error al conectar con el servidor');
     }
