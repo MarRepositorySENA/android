@@ -2,34 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class RoleScreen extends StatefulWidget {
+class PaisScreen extends StatefulWidget {
   @override
-  _RoleScreenState createState() => _RoleScreenState();
+  _PaisScreenState createState() => _PaisScreenState();
 }
 
-class _RoleScreenState extends State<RoleScreen> {
-  List<dynamic> _roles = [];
+class _PaisScreenState extends State<PaisScreen> {
+  List<dynamic> _paises = [];
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchRoles();
+    _fetchPaises();
   }
 
-  Future<void> _fetchRoles() async {
-    final url = Uri.parse('http://localhost:9000/base/api/v1/base/security/role');
+  Future<void> _fetchPaises() async {
+    final url = Uri.parse('http://localhost:9000/base/api/v1/base/parameter/infraestructura/pais');
 
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
         setState(() {
           // Decodificar en UTF-8
-          _roles = json.decode(utf8.decode(response.bodyBytes));
+          _paises = json.decode(utf8.decode(response.bodyBytes));
           _isLoading = false;
         });
       } else {
-        throw Exception('Error al cargar datos');
+        throw Exception('Error al cargar los datos');
       }
     } catch (error) {
       print('Error: $error');
@@ -43,24 +43,24 @@ class _RoleScreenState extends State<RoleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Registro de Roles'),
+        title: Text('Registro de Paises'),
       ),
       body: Container(
-        color: Color(0xFFFFFFFF), // Fondo blanco
+        color: Color(0xFFFFFFFF), // Fondo
         child: _isLoading
             ? Center(child: CircularProgressIndicator())
             : ListView.builder(
-                itemCount: _roles.length,
+                itemCount: _paises.length,
                 itemBuilder: (context, index) {
-                  final role = _roles[index];
+                  final pais = _paises[index];
                   return Card(
                     color: Color(0xFF004455), // Color de la tarjeta
                     margin: EdgeInsets.all(8),
                     child: ExpansionTile(
                       backgroundColor: Color(0xFF39A900), // Color al expandir
                       title: Text(
-                        '${role['nombre']}', // puedo cambiar nombre segun la estructura
-                        style: TextStyle(color: Colors.white),
+                        '${pais['nombre']}',
+                        style: TextStyle(color: Colors.white), // Letra
                       ),
                       children: [
                         Padding(
@@ -68,8 +68,7 @@ class _RoleScreenState extends State<RoleScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Descripción: ${role['descripcion']}', style: TextStyle(color: Colors.white)), //color de la data text
-                              // Agrega más campos según sea necesario
+                              Text('Código: ${pais['codigo']}', style: TextStyle(color: Colors.white)),
                             ],
                           ),
                         ),
@@ -86,7 +85,7 @@ class _RoleScreenState extends State<RoleScreen> {
             foregroundColor: MaterialStateProperty.all(Colors.white),
           ),
           onPressed: () {
-            Navigator.pop(context); // Regresa a la pantalla anterior
+            Navigator.pop(context);
           },
           child: Text('Volver'),
         ),

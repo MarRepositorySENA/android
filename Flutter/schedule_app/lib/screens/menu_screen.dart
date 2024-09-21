@@ -48,7 +48,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   margin: EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
                   padding: EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
-                    color: Color(0xFFB2E4A3),
+                    color: Color(0xFF39A900),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: ListTile(
